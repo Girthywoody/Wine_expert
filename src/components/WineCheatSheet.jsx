@@ -9,7 +9,6 @@ const WineCheatSheet = () => {
   const [activeTab, setActiveTab] = useState('all');
   const [expandedVarietals, setExpandedVarietals] = useState({});
   const [selectedPairing, setSelectedPairing] = useState('');
-  const [pairingSearchTerm, setPairingSearchTerm] = useState('');
   
   // Common food pairings for the dropdown
   const commonPairings = [
@@ -20,11 +19,6 @@ const WineCheatSheet = () => {
     "ribs", "salmon", "scallops", "seafood", "shrimp", "sirloin", 
     "steak", "steamed fish"
   ];
-
-  // Filter pairings based on search term
-  const filteredPairings = commonPairings.filter(pairing => 
-    pairing.toLowerCase().includes(pairingSearchTerm.toLowerCase())
-  );
 
   useEffect(() => {
     const fetchWineData = async () => {
@@ -222,28 +216,19 @@ const WineCheatSheet = () => {
           <label htmlFor="pairingFilter" className="block text-sm font-medium text-gray-700 mb-1">
             Filter by Food Pairing
           </label>
-          <div className="relative">
-            <input
-              type="text"
-              placeholder="Search pairings..."
-              className="w-full p-2 border border-gray-300 rounded-t shadow-sm"
-              value={pairingSearchTerm}
-              onChange={(e) => setPairingSearchTerm(e.target.value)}
-            />
-            <select
-              id="pairingFilter"
-              className="w-full p-2 border border-gray-300 rounded-b shadow-sm bg-white"
-              value={selectedPairing}
-              onChange={(e) => setSelectedPairing(e.target.value)}
-            >
-              <option value="">All Pairings</option>
-              {filteredPairings.map((pairing) => (
-                <option key={pairing} value={pairing}>
-                  {pairing.charAt(0).toUpperCase() + pairing.slice(1)}
-                </option>
-              ))}
-            </select>
-          </div>
+          <select
+            id="pairingFilter"
+            className="w-full p-2 border border-gray-300 rounded shadow-sm bg-white"
+            value={selectedPairing}
+            onChange={(e) => setSelectedPairing(e.target.value)}
+          >
+            <option value="">All Pairings</option>
+            {commonPairings.map((pairing) => (
+              <option key={pairing} value={pairing}>
+                {pairing.charAt(0).toUpperCase() + pairing.slice(1)}
+              </option>
+            ))}
+          </select>
         </div>
         
         <div className="flex mb-4 border-b">
