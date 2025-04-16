@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import Papa from 'papaparse';
 
 const WineCheatSheet = () => {
@@ -11,6 +11,7 @@ const WineCheatSheet = () => {
   const [selectedPairing, setSelectedPairing] = useState('');
   const [selectedStyles, setSelectedStyles] = useState([]);
   const [isStyleDropdownOpen, setIsStyleDropdownOpen] = useState(false);
+  const dropdownRef = useRef(null);
 
   
   // Common food pairings for the dropdown
@@ -210,6 +211,20 @@ const filteredWines = wines.filter(wine => {
     setSearchTerm(e.target.value);
   };
 
+  // Add click outside handler
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
+        setIsStyleDropdownOpen(false);
+      }
+    };
+
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
+  }, []);
+
   if (loading) {
     return (
       <div className="max-w-md mx-auto bg-gray-100 min-h-screen flex items-center justify-center">
@@ -232,7 +247,7 @@ const filteredWines = wines.filter(wine => {
   return (
     <div className="max-w-md mx-auto bg-gray-100 min-h-screen pb-8">
       <header className="bg-red-900 text-white p-4 shadow-md">
-        <h1 className="text-2xl font-bold text-center">Steak House Wine Guide</h1>
+        <h1 className="text-2xl font-bold text-center">Lot 88 Wine Guide</h1>
       </header>
       
       <div className="p-4">
@@ -269,7 +284,7 @@ const filteredWines = wines.filter(wine => {
           <label htmlFor="styleFilter" className="block text-sm font-medium text-gray-700 mb-1">
             Filter by Style
           </label>
-          <div className="relative">
+          <div className="relative" ref={dropdownRef}>
             <button
               type="button"
               className="w-full p-2 border border-gray-300 rounded shadow-sm bg-white text-left flex justify-between items-center"
@@ -280,7 +295,7 @@ const filteredWines = wines.filter(wine => {
             </button>
             
             {isStyleDropdownOpen && (
-              <div className="absolute z-10 w-full mt-1 bg-white border border-gray-300 rounded shadow-lg max-h-60 overflow-y-auto">
+              <div className="absolute z-50 w-full bottom-full mb-1 bg-white border border-gray-300 rounded shadow-lg max-h-60 overflow-y-auto">
                 <div className="p-2 space-y-2">
                   {commonStyles.map((style) => (
                     <div key={style} className="flex items-center">
