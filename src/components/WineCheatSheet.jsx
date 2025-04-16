@@ -8,10 +8,8 @@ const WineCheatSheet = () => {
   const [searchTerm, setSearchTerm] = useState('');
   const [activeTab, setActiveTab] = useState('all');
   const [expandedVarietals, setExpandedVarietals] = useState({});
-  const [selectedPairings, setSelectedPairings] = useState([]);
+  const [selectedPairing, setSelectedPairing] = useState('');
   const [selectedStyles, setSelectedStyles] = useState([]);
-  const [showPairingDropdown, setShowPairingDropdown] = useState(false);
-  const [showStyleDropdown, setShowStyleDropdown] = useState(false);
 
   
   // Common food pairings for the dropdown
@@ -46,7 +44,7 @@ const WineCheatSheet = () => {
       try {
         // Read the CSV file
         const csvData = await fetch('winelist.csv')
-          .then(response => {
+          .then(response => {fu
             if (!response.ok) {
               throw new Error('Failed to fetch CSV file');
             }
@@ -89,7 +87,7 @@ const WineCheatSheet = () => {
     fetchWineData();
   }, []);
 
-// Filter wines based on search term, active tab, selected pairings and styles
+// Filter wines based on search term, active tab, selected pairing and style
 const filteredWines = wines.filter(wine => {
   const matchesSearch = 
     (wine.name?.toLowerCase() || '').includes(searchTerm.toLowerCase()) ||
@@ -97,18 +95,16 @@ const filteredWines = wines.filter(wine => {
     (wine.region?.toLowerCase() || '').includes(searchTerm.toLowerCase()) ||
     (wine.varietal?.toLowerCase() || '').includes(searchTerm.toLowerCase());
   
-  const matchesPairings = selectedPairings.length === 0 || 
-    selectedPairings.some(pairing => 
-      (wine.pairings?.toLowerCase() || '').includes(pairing.toLowerCase())
-    );
+  const matchesPairing = !selectedPairing || 
+    (wine.pairings?.toLowerCase() || '').includes(selectedPairing.toLowerCase());
 
-  const matchesStyles = selectedStyles.length === 0 || 
-    selectedStyles.some(style => 
+  const matchesStyle = selectedStyles.length === 0 || 
+    selectedStyles.every(style => 
       (wine.style?.toLowerCase() || '').includes(style.toLowerCase())
     );
   
-  if (activeTab === 'all') return matchesSearch && matchesPairings && matchesStyles;
-  return matchesSearch && matchesPairings && matchesStyles && wine.type === activeTab;
+  if (activeTab === 'all') return matchesSearch && matchesPairing && matchesStyle;
+  return matchesSearch && matchesPairing && matchesStyle && wine.type === activeTab;
 });
   
   // First separate by type, then group by varietal
@@ -152,7 +148,7 @@ const filteredWines = wines.filter(wine => {
     // Create a new expanded state object
     let newExpandedState = {};
     
-    if (searchTerm.trim() !== '' || selectedPairings.length > 0 || selectedStyles.length > 0) {
+    if (searchTerm.trim() !== '' || selectedPairing !== '' || selectedStyles.length > 0) {
       // Expand varietals with matching wines (either by search, pairing, or style)
       sortedRedVarietals.forEach(varietal => {
         const hasMatchingWine = redWinesByVarietal[varietal].some(wine => {
@@ -162,17 +158,15 @@ const filteredWines = wines.filter(wine => {
             (wine.region?.toLowerCase() || '').includes(searchTerm.toLowerCase()) ||
             (wine.varietal?.toLowerCase() || '').includes(searchTerm.toLowerCase());
           
-          const matchesPairings = selectedPairings.length === 0 || 
-            selectedPairings.some(pairing => 
-              (wine.pairings?.toLowerCase() || '').includes(pairing.toLowerCase())
-            );
+          const matchesPairing = selectedPairing === '' || 
+            (wine.pairings?.toLowerCase() || '').includes(selectedPairing.toLowerCase());
           
-          const matchesStyles = selectedStyles.length === 0 || 
-            selectedStyles.some(style => 
+          const matchesStyle = selectedStyles.length === 0 || 
+            selectedStyles.every(style => 
               (wine.style?.toLowerCase() || '').includes(style.toLowerCase())
             );
           
-          return matchesSearch && matchesPairings && matchesStyles;
+          return matchesSearch && matchesPairing && matchesStyle;
         });
         
         if (hasMatchingWine) {
@@ -188,17 +182,15 @@ const filteredWines = wines.filter(wine => {
             (wine.region?.toLowerCase() || '').includes(searchTerm.toLowerCase()) ||
             (wine.varietal?.toLowerCase() || '').includes(searchTerm.toLowerCase());
           
-          const matchesPairings = selectedPairings.length === 0 || 
-            selectedPairings.some(pairing => 
-              (wine.pairings?.toLowerCase() || '').includes(pairing.toLowerCase())
-            );
+          const matchesPairing = selectedPairing === '' || 
+            (wine.pairings?.toLowerCase() || '').includes(selectedPairing.toLowerCase());
           
-          const matchesStyles = selectedStyles.length === 0 || 
-            selectedStyles.some(style => 
+          const matchesStyle = selectedStyles.length === 0 || 
+            selectedStyles.every(style => 
               (wine.style?.toLowerCase() || '').includes(style.toLowerCase())
             );
           
-          return matchesSearch && matchesPairings && matchesStyles;
+          return matchesSearch && matchesPairing && matchesStyle;
         });
         
         if (hasMatchingWine) {
@@ -211,27 +203,11 @@ const filteredWines = wines.filter(wine => {
         setExpandedVarietals(prev => ({...prev, ...newExpandedState}));
       }
     }
-  }, [searchTerm, selectedPairings, selectedStyles, sortedRedVarietals, sortedWhiteVarietals]);
+  }, [searchTerm, selectedPairing, selectedStyles, sortedRedVarietals, sortedWhiteVarietals]);
   
   // Handle search term changes
   const handleSearchChange = (e) => {
     setSearchTerm(e.target.value);
-  };
-
-  const handlePairingSelect = (pairing) => {
-    setSelectedPairings(prev => 
-      prev.includes(pairing) 
-        ? prev.filter(p => p !== pairing)
-        : [...prev, pairing]
-    );
-  };
-
-  const handleStyleSelect = (style) => {
-    setSelectedStyles(prev => 
-      prev.includes(style) 
-        ? prev.filter(s => s !== style)
-        : [...prev, style]
-    );
   };
 
   if (loading) {
@@ -271,70 +247,49 @@ const filteredWines = wines.filter(wine => {
         </div>
         
         <div className="mb-4">
-          <div className="relative">
-            <button
-              onClick={() => setShowPairingDropdown(!showPairingDropdown)}
-              className="w-full p-2 border border-gray-300 rounded shadow-sm bg-white text-left flex justify-between items-center"
-            >
-              <span>
-                {selectedPairings.length > 0 
-                  ? `${selectedPairings.length} Pairings Selected`
-                  : "Select Food Pairings"}
-              </span>
-              <span className="text-gray-500">▼</span>
-            </button>
-            {showPairingDropdown && (
-              <div className="absolute z-10 w-full mt-1 bg-white border border-gray-300 rounded shadow-lg max-h-60 overflow-y-auto">
-                {commonPairings.map((pairing) => (
-                  <label
-                    key={pairing}
-                    className="flex items-center p-2 hover:bg-gray-100 cursor-pointer"
-                  >
-                    <input
-                      type="checkbox"
-                      checked={selectedPairings.includes(pairing)}
-                      onChange={() => handlePairingSelect(pairing)}
-                      className="mr-2"
-                    />
-                    <span>{pairing.charAt(0).toUpperCase() + pairing.slice(1)}</span>
-                  </label>
-                ))}
-              </div>
-            )}
-          </div>
+          <label htmlFor="pairingFilter" className="block text-sm font-medium text-gray-700 mb-1">
+            Filter by Food Pairing
+          </label>
+          <select
+            id="pairingFilter"
+            className="w-full p-2 border border-gray-300 rounded shadow-sm bg-white"
+            value={selectedPairing}
+            onChange={(e) => setSelectedPairing(e.target.value)}
+          >
+            <option value="">All Pairings</option>
+            {commonPairings.map((pairing) => (
+              <option key={pairing} value={pairing}>
+                {pairing.charAt(0).toUpperCase() + pairing.slice(1)}
+              </option>
+            ))}
+          </select>
         </div>
 
         <div className="mb-4">
-          <div className="relative">
-            <button
-              onClick={() => setShowStyleDropdown(!showStyleDropdown)}
-              className="w-full p-2 border border-gray-300 rounded shadow-sm bg-white text-left flex justify-between items-center"
-            >
-              <span>
-                {selectedStyles.length > 0 
-                  ? `${selectedStyles.length} Styles Selected`
-                  : "Select Wine Styles"}
-              </span>
-              <span className="text-gray-500">▼</span>
-            </button>
-            {showStyleDropdown && (
-              <div className="absolute z-10 w-full mt-1 bg-white border border-gray-300 rounded shadow-lg max-h-60 overflow-y-auto">
-                {commonStyles.map((style) => (
-                  <label
-                    key={style}
-                    className="flex items-center p-2 hover:bg-gray-100 cursor-pointer"
-                  >
-                    <input
-                      type="checkbox"
-                      checked={selectedStyles.includes(style)}
-                      onChange={() => handleStyleSelect(style)}
-                      className="mr-2"
-                    />
-                    <span>{style}</span>
-                  </label>
-                ))}
+          <label htmlFor="styleFilter" className="block text-sm font-medium text-gray-700 mb-1">
+            Filter by Style
+          </label>
+          <div className="space-y-2 max-h-40 overflow-y-auto border border-gray-300 rounded p-2 bg-white">
+            {commonStyles.map((style) => (
+              <div key={style} className="flex items-center">
+                <input
+                  type="checkbox"
+                  id={`style-${style}`}
+                  className="h-4 w-4 text-red-900 focus:ring-red-900 border-gray-300 rounded"
+                  checked={selectedStyles.includes(style)}
+                  onChange={(e) => {
+                    if (e.target.checked) {
+                      setSelectedStyles([...selectedStyles, style]);
+                    } else {
+                      setSelectedStyles(selectedStyles.filter(s => s !== style));
+                    }
+                  }}
+                />
+                <label htmlFor={`style-${style}`} className="ml-2 text-sm text-gray-700">
+                  {style}
+                </label>
               </div>
-            )}
+            ))}
           </div>
         </div>
         
