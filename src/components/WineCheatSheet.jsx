@@ -295,7 +295,7 @@ const filteredWines = wines.filter(wine => {
             </button>
             
             {isStyleDropdownOpen && (
-              <div className="absolute z-50 w-full bottom-full mb-1 bg-white border border-gray-300 rounded shadow-lg max-h-60 overflow-y-auto">
+              <div className="absolute z-50 w-full top-full mt-1 bg-white border border-gray-300 rounded shadow-lg max-h-60 overflow-y-auto">
                 <div className="p-2 space-y-2">
                   {commonStyles.map((style) => (
                     <div key={style} className="flex items-center">
