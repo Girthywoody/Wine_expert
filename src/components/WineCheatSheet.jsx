@@ -37,8 +37,7 @@ const WineCheatSheet = () => {
               region: wine['MADE IN'] || '',
               style: wine['SYTLE'] || '', // Note: CSV has a typo in "SYTLE"
               pairings: wine['FOOD PAIRING'] || '',
-              description: wine['DESCRIPTION'] || '',
-              id: wine['WINE ID'] || ''
+              description: wine['DESCRIPTION'] || ''
             }));
             
             setWines(transformedWines);
