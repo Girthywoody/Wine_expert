@@ -9,6 +9,8 @@ const WineCheatSheet = () => {
   const [activeTab, setActiveTab] = useState('all');
   const [expandedVarietals, setExpandedVarietals] = useState({});
   const [selectedPairing, setSelectedPairing] = useState('');
+  const [selectedStyle, setSelectedStyle] = useState('');
+
   
   // Common food pairings for the dropdown
   const commonPairings = [
@@ -18,6 +20,27 @@ const WineCheatSheet = () => {
     "mushrooms", "oysters", "pad thai", "parmesan chicken", "pasta", 
     "ribs", "salmon", "scallops", "seafood", "shrimp", "sirloin", 
     "steak", "steamed fish"
+  ];
+
+  // Common wine styles for the dropdown
+  const commonStyles = [
+    "Crisp & Dry",
+    "Dry",
+    "Dry-Medium Bodied", 
+    "Fruity & Sweet",
+    "Full Bodied & Fruity",
+    "Full Bodied & Smooth",
+    "Full-Bodied & Rich",
+    "Full-Bodied & Smooth",
+    "Light & Crisp",
+    "Light & Fruity",
+    "Medium Bodied",
+    "Medium Bodied & Fruity",
+    "Medium Bodied & Smooth",
+    "Medium Bodied & Well Structured",
+    "Medium-Bodied Fruity",
+    "Off-Dry & Fruity",
+    "Soft"
   ];
 
   useEffect(() => {
@@ -68,20 +91,23 @@ const WineCheatSheet = () => {
     fetchWineData();
   }, []);
 
-  // Filter wines based on search term, active tab, and selected pairing
-  const filteredWines = wines.filter(wine => {
-    const matchesSearch = 
-      (wine.name?.toLowerCase() || '').includes(searchTerm.toLowerCase()) ||
-      (wine.description?.toLowerCase() || '').includes(searchTerm.toLowerCase()) ||
-      (wine.region?.toLowerCase() || '').includes(searchTerm.toLowerCase()) ||
-      (wine.varietal?.toLowerCase() || '').includes(searchTerm.toLowerCase());
-    
-    const matchesPairing = !selectedPairing || 
-      (wine.pairings?.toLowerCase() || '').includes(selectedPairing.toLowerCase());
-    
-    if (activeTab === 'all') return matchesSearch && matchesPairing;
-    return matchesSearch && matchesPairing && wine.type === activeTab;
-  });
+// Filter wines based on search term, active tab, selected pairing and style
+const filteredWines = wines.filter(wine => {
+  const matchesSearch = 
+    (wine.name?.toLowerCase() || '').includes(searchTerm.toLowerCase()) ||
+    (wine.description?.toLowerCase() || '').includes(searchTerm.toLowerCase()) ||
+    (wine.region?.toLowerCase() || '').includes(searchTerm.toLowerCase()) ||
+    (wine.varietal?.toLowerCase() || '').includes(searchTerm.toLowerCase());
+  
+  const matchesPairing = !selectedPairing || 
+    (wine.pairings?.toLowerCase() || '').includes(selectedPairing.toLowerCase());
+
+  const matchesStyle = !selectedStyle || 
+    (wine.style?.toLowerCase() || '').includes(selectedStyle.toLowerCase());
+  
+  if (activeTab === 'all') return matchesSearch && matchesPairing && matchesStyle;
+  return matchesSearch && matchesPairing && matchesStyle && wine.type === activeTab;
+});
   
   // First separate by type, then group by varietal
   const winesByType = {
@@ -119,13 +145,13 @@ const WineCheatSheet = () => {
   const sortedRedVarietals = Object.keys(redWinesByVarietal).sort();
   const sortedWhiteVarietals = Object.keys(whiteWinesByVarietal).sort();
   
-  // Effect to handle auto-expansion of varietals based on search term or selected pairing
+
   useEffect(() => {
     // Create a new expanded state object
     let newExpandedState = {};
     
-    if (searchTerm.trim() !== '' || selectedPairing !== '') {
-      // Expand varietals with matching wines (either by search or pairing)
+    if (searchTerm.trim() !== '' || selectedPairing !== '' || selectedStyle !== '') {
+      // Expand varietals with matching wines (either by search, pairing, or style)
       sortedRedVarietals.forEach(varietal => {
         const hasMatchingWine = redWinesByVarietal[varietal].some(wine => {
           const matchesSearch = searchTerm.trim() === '' || 
@@ -137,7 +163,10 @@ const WineCheatSheet = () => {
           const matchesPairing = selectedPairing === '' || 
             (wine.pairings?.toLowerCase() || '').includes(selectedPairing.toLowerCase());
           
-          return matchesSearch && matchesPairing;
+          const matchesStyle = selectedStyle === '' || 
+            (wine.style?.toLowerCase() || '').includes(selectedStyle.toLowerCase());
+          
+          return matchesSearch && matchesPairing && matchesStyle;
         });
         
         if (hasMatchingWine) {
@@ -156,7 +185,10 @@ const WineCheatSheet = () => {
           const matchesPairing = selectedPairing === '' || 
             (wine.pairings?.toLowerCase() || '').includes(selectedPairing.toLowerCase());
           
-          return matchesSearch && matchesPairing;
+          const matchesStyle = selectedStyle === '' || 
+            (wine.style?.toLowerCase() || '').includes(selectedStyle.toLowerCase());
+          
+          return matchesSearch && matchesPairing && matchesStyle;
         });
         
         if (hasMatchingWine) {
@@ -169,8 +201,8 @@ const WineCheatSheet = () => {
         setExpandedVarietals(prev => ({...prev, ...newExpandedState}));
       }
     }
-  }, [searchTerm, selectedPairing, sortedRedVarietals, sortedWhiteVarietals]);
-
+  }, [searchTerm, selectedPairing, selectedStyle, sortedRedVarietals, sortedWhiteVarietals]);
+  
   // Handle search term changes
   const handleSearchChange = (e) => {
     setSearchTerm(e.target.value);
@@ -226,6 +258,25 @@ const WineCheatSheet = () => {
             {commonPairings.map((pairing) => (
               <option key={pairing} value={pairing}>
                 {pairing.charAt(0).toUpperCase() + pairing.slice(1)}
+              </option>
+            ))}
+          </select>
+        </div>
+
+        <div className="mb-4">
+          <label htmlFor="styleFilter" className="block text-sm font-medium text-gray-700 mb-1">
+            Filter by Style
+          </label>
+          <select
+            id="styleFilter"
+            className="w-full p-2 border border-gray-300 rounded shadow-sm bg-white"
+            value={selectedStyle}
+            onChange={(e) => setSelectedStyle(e.target.value)}
+          >
+            <option value="">All Styles</option>
+            {commonStyles.map((style) => (
+              <option key={style} value={style}>
+                {style}
               </option>
             ))}
           </select>
