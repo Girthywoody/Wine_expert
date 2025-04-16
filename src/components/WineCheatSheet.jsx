@@ -1,94 +1,86 @@
-import { useState } from 'react';
-
-// Sample wine data - you would replace this with your actual wine inventory
-const wines = [
-  // White Wines
-  {
-    name: "Chardonnay, Sonoma Coast",
-    type: "white",
-    sweetness: "Dry",
-    acidity: "Medium",
-    body: "Medium to Full",
-    region: "California",
-    pairings: "Chicken, Lobster, Creamy Pasta",
-    description: "Crisp apple and pear flavors with subtle oak and vanilla notes. Rich mouthfeel with balanced acidity."
-  },
-  {
-    name: "Sauvignon Blanc, Marlborough",
-    type: "white",
-    sweetness: "Dry",
-    acidity: "High",
-    body: "Light to Medium",
-    region: "New Zealand",
-    pairings: "Seafood, Salads, Goat Cheese",
-    description: "Vibrant citrus and tropical fruit notes with grassy undertones. Crisp and refreshing."
-  },
-  {
-    name: "Riesling, Mosel",
-    type: "white",
-    sweetness: "Off-Dry",
-    acidity: "High",
-    body: "Light",
-    region: "Germany",
-    pairings: "Spicy Foods, Pork, Asian Cuisine",
-    description: "Delicate peach and apricot notes with hints of honey. Balanced sweetness with mineral backbone."
-  },
-  // Red Wines
-  {
-    name: "Cabernet Sauvignon, Napa Valley",
-    type: "red",
-    sweetness: "Dry",
-    acidity: "Medium",
-    body: "Full",
-    region: "California",
-    pairings: "Ribeye, NY Strip, Lamb",
-    description: "Bold black currant and cherry flavors with notes of cedar and spice. Firm tannins with a long finish."
-  },
-  {
-    name: "Pinot Noir, Willamette Valley",
-    type: "red",
-    sweetness: "Dry",
-    acidity: "Medium-High",
-    body: "Light to Medium",
-    region: "Oregon",
-    pairings: "Filet Mignon, Pork, Duck",
-    description: "Elegant red cherry and raspberry flavors with earthy undertones. Silky texture with subtle tannins."
-  },
-  {
-    name: "Malbec, Mendoza",
-    type: "red",
-    sweetness: "Dry",
-    acidity: "Medium",
-    body: "Medium to Full",
-    region: "Argentina",
-    pairings: "Skirt Steak, Flank Steak, BBQ",
-    description: "Ripe plum and blackberry flavors with hints of chocolate and violet. Smooth tannins with a velvety finish."
-  },
-  {
-    name: "Syrah, Rhône Valley",
-    type: "red",
-    sweetness: "Dry",
-    acidity: "Medium",
-    body: "Full",
-    region: "France",
-    pairings: "Ribeye, Game Meats, Aged Cheeses",
-    description: "Dark berry and pepper notes with smoky, meaty undertones. Bold and full-bodied with firm tannins."
-  }
-];
+import { useState, useEffect } from 'react';
+import Papa from 'papaparse';
 
 const WineCheatSheet = () => {
+  const [wines, setWines] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
   const [searchTerm, setSearchTerm] = useState('');
   const [activeTab, setActiveTab] = useState('all');
-  
+
+  useEffect(() => {
+    const fetchWineData = async () => {
+      try {
+        // Read the CSV file
+        const csvData = await window.fs.readFile('winelist.csv', { encoding: 'utf8' });
+        
+        // Parse CSV to JSON
+        Papa.parse(csvData, {
+          header: true,
+          skipEmptyLines: true,
+          dynamicTyping: true,
+          complete: (results) => {
+            // Transform the data structure to match our app needs
+            const transformedWines = results.data.map(wine => ({
+              name: wine['WINE NAME'] || '',
+              type: wine['WINE COLOR']?.toLowerCase() || '',
+              varietal: wine['VARIETAL'] || '',
+              sweetness: wine['SWEETNESS'] || '',
+              alcohol: wine['ALCOHOL'] || '',
+              region: wine['MADE IN'] || '',
+              style: wine['SYTLE'] || '', // Note: CSV has a typo in "SYTLE"
+              pairings: wine['FOOD PAIRING'] || '',
+              description: wine['DESCRIPTION'] || '',
+              id: wine['WINE ID'] || ''
+            }));
+            
+            setWines(transformedWines);
+            setLoading(false);
+          },
+          error: (error) => {
+            setError('Error parsing CSV: ' + error.message);
+            setLoading(false);
+          }
+        });
+      } catch (err) {
+        setError('Error loading wine data: ' + err.message);
+        setLoading(false);
+      }
+    };
+
+    fetchWineData();
+  }, []);
+
   // Filter wines based on search term and active tab
   const filteredWines = wines.filter(wine => {
-    const matchesSearch = wine.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                         wine.description.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                         wine.region.toLowerCase().includes(searchTerm.toLowerCase());
+    const matchesSearch = 
+      (wine.name?.toLowerCase() || '').includes(searchTerm.toLowerCase()) ||
+      (wine.description?.toLowerCase() || '').includes(searchTerm.toLowerCase()) ||
+      (wine.region?.toLowerCase() || '').includes(searchTerm.toLowerCase()) ||
+      (wine.varietal?.toLowerCase() || '').includes(searchTerm.toLowerCase());
     
     if (activeTab === 'all') return matchesSearch;
     return matchesSearch && wine.type === activeTab;
   });
+
+  if (loading) {
+    return (
+      <div className="max-w-md mx-auto bg-gray-100 min-h-screen flex items-center justify-center">
+        <p className="text-xl text-gray-600">Loading wine data...</p>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="max-w-md mx-auto bg-gray-100 min-h-screen flex items-center justify-center p-4">
+        <div className="bg-red-50 p-4 rounded-lg border border-red-200 text-red-800">
+          <h2 className="text-lg font-bold mb-2">Error Loading Data</h2>
+          <p>{error}</p>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="max-w-md mx-auto bg-gray-100 min-h-screen pb-8">
@@ -140,19 +132,22 @@ const WineCheatSheet = () => {
                 <h2 className="text-lg font-bold">{wine.name}</h2>
                 <div className="grid grid-cols-2 gap-2 mt-2 text-sm">
                   <div>
+                    <span className="font-medium">Varietal:</span> {wine.varietal}
+                  </div>
+                  <div>
                     <span className="font-medium">Type:</span> {wine.type === 'red' ? 'Red' : 'White'}
                   </div>
                   <div>
                     <span className="font-medium">Sweetness:</span> {wine.sweetness}
                   </div>
                   <div>
-                    <span className="font-medium">Acidity:</span> {wine.acidity}
-                  </div>
-                  <div>
-                    <span className="font-medium">Body:</span> {wine.body}
+                    <span className="font-medium">Alcohol:</span> {wine.alcohol}
                   </div>
                   <div>
                     <span className="font-medium">Region:</span> {wine.region}
+                  </div>
+                  <div>
+                    <span className="font-medium">Style:</span> {wine.style}
                   </div>
                 </div>
                 <div className="mt-2 text-sm">
