@@ -112,14 +112,14 @@ const WineCheatSheet = () => {
     // Add red varietals
     sortedRedVarietals.forEach(varietal => {
       if (expandedVarietals[varietal] === undefined) {
-        newExpandedState[varietal] = true; // Start expanded by default
+        newExpandedState[varietal] = false; // Start collapsed by default
       }
     });
     
     // Add white varietals
     sortedWhiteVarietals.forEach(varietal => {
       if (expandedVarietals[varietal] === undefined) {
-        newExpandedState[varietal] = true; // Start expanded by default
+        newExpandedState[varietal] = false; // Start collapsed by default
       }
     });
     
