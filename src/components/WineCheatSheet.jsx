@@ -7,12 +7,13 @@ const WineCheatSheet = () => {
   const [error, setError] = useState(null);
   const [searchTerm, setSearchTerm] = useState('');
   const [activeTab, setActiveTab] = useState('all');
+  const [expandedVarietals, setExpandedVarietals] = useState({});
 
   useEffect(() => {
     const fetchWineData = async () => {
       try {
         // Read the CSV file
-        const csvData = await fetch('winelist.csv')
+        const csvData = await fetch('Untitled spreadsheet  Sheet3.csv')
           .then(response => {
             if (!response.ok) {
               throw new Error('Failed to fetch CSV file');
@@ -68,6 +69,65 @@ const WineCheatSheet = () => {
     if (activeTab === 'all') return matchesSearch;
     return matchesSearch && wine.type === activeTab;
   });
+  
+  // First separate by type, then group by varietal
+  const winesByType = {
+    red: [],
+    white: []
+  };
+  
+  // Group wines by type
+  filteredWines.forEach(wine => {
+    const type = wine.type === 'red' ? 'red' : 'white';
+    winesByType[type].push(wine);
+  });
+  
+  // Then group by varietal within each type
+  const redWinesByVarietal = {};
+  const whiteWinesByVarietal = {};
+  
+  winesByType.red.forEach(wine => {
+    const varietal = wine.varietal || 'Other';
+    if (!redWinesByVarietal[varietal]) {
+      redWinesByVarietal[varietal] = [];
+    }
+    redWinesByVarietal[varietal].push(wine);
+  });
+  
+  winesByType.white.forEach(wine => {
+    const varietal = wine.varietal || 'Other';
+    if (!whiteWinesByVarietal[varietal]) {
+      whiteWinesByVarietal[varietal] = [];
+    }
+    whiteWinesByVarietal[varietal].push(wine);
+  });
+  
+  // Sort varietals alphabetically
+  const sortedRedVarietals = Object.keys(redWinesByVarietal).sort();
+  const sortedWhiteVarietals = Object.keys(whiteWinesByVarietal).sort();
+  
+  // Initialize expanded state for new varietals
+  useEffect(() => {
+    const newExpandedState = {};
+    
+    // Add red varietals
+    sortedRedVarietals.forEach(varietal => {
+      if (expandedVarietals[varietal] === undefined) {
+        newExpandedState[varietal] = true; // Start expanded by default
+      }
+    });
+    
+    // Add white varietals
+    sortedWhiteVarietals.forEach(varietal => {
+      if (expandedVarietals[varietal] === undefined) {
+        newExpandedState[varietal] = true; // Start expanded by default
+      }
+    });
+    
+    if (Object.keys(newExpandedState).length > 0) {
+      setExpandedVarietals(prev => ({...prev, ...newExpandedState}));
+    }
+  }, [sortedRedVarietals, sortedWhiteVarietals]);
 
   if (loading) {
     return (
@@ -126,44 +186,115 @@ const WineCheatSheet = () => {
           </button>
         </div>
         
-        <div className="space-y-4">
+        <div className="space-y-6">
           {filteredWines.length === 0 ? (
             <p className="text-center py-8 text-gray-500">No wines found. Try a different search.</p>
           ) : (
-            filteredWines.map((wine, index) => (
-              <div 
-                key={index} 
-                className={`p-4 rounded-lg shadow-md ${wine.type === 'red' ? 'bg-red-50' : 'bg-yellow-50'}`}
-              >
-                <h2 className="text-lg font-bold">{wine.name}</h2>
-                <div className="grid grid-cols-2 gap-2 mt-2 text-sm">
-                  <div>
-                    <span className="font-medium">Varietal:</span> {wine.varietal}
-                  </div>
-                  <div>
-                    <span className="font-medium">Type:</span> {wine.type === 'red' ? 'Red' : 'White'}
-                  </div>
-                  <div>
-                    <span className="font-medium">Sweetness:</span> {wine.sweetness}
-                  </div>
-                  <div>
-                    <span className="font-medium">Alcohol:</span> {wine.alcohol}
-                  </div>
-                  <div>
-                    <span className="font-medium">Region:</span> {wine.region}
-                  </div>
-                  <div>
-                    <span className="font-medium">Style:</span> {wine.style}
+            <>
+              {/* Only show Red Wine section if we have red wines and not filtering to white only */}
+              {sortedRedVarietals.length > 0 && activeTab !== 'white' && (
+                <div className="mb-6">
+                  <h2 className="text-xl font-bold mb-4 bg-red-700 text-white p-2 rounded-md">Red Wines</h2>
+                  
+                  <div className="space-y-4 pl-2">
+                    {sortedRedVarietals.map(varietal => (
+                      <div key={varietal} className="space-y-4">
+                        <div 
+                          className="sticky top-0 z-10 p-2 font-bold text-lg bg-red-100 rounded-md shadow-sm cursor-pointer flex justify-between items-center"
+                          onClick={() => setExpandedVarietals(prev => ({...prev, [varietal]: !prev[varietal]}))}
+                        >
+                          <span>{varietal} ({redWinesByVarietal[varietal].length})</span>
+                          <span className="text-gray-700">
+                            {expandedVarietals[varietal] ? '▼' : '▶'}
+                          </span>
+                        </div>
+                        
+                        {expandedVarietals[varietal] && redWinesByVarietal[varietal].map((wine, index) => (
+                          <div 
+                            key={index} 
+                            className="p-4 rounded-lg shadow-md bg-red-50"
+                          >
+                            <h2 className="text-lg font-bold">{wine.name}</h2>
+                            <div className="grid grid-cols-2 gap-2 mt-2 text-sm">
+                              <div>
+                                <span className="font-medium">Sweetness:</span> {wine.sweetness}
+                              </div>
+                              <div>
+                                <span className="font-medium">Alcohol:</span> {wine.alcohol}
+                              </div>
+                              <div>
+                                <span className="font-medium">Region:</span> {wine.region}
+                              </div>
+                              <div>
+                                <span className="font-medium">Style:</span> {wine.style}
+                              </div>
+                            </div>
+                            <div className="mt-2 text-sm">
+                              <span className="font-medium">Pairs with:</span> {wine.pairings}
+                            </div>
+                            <div className="mt-2 text-sm">
+                              <span className="font-medium">Description:</span> {wine.description}
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+                    ))}
                   </div>
                 </div>
-                <div className="mt-2 text-sm">
-                  <span className="font-medium">Pairs with:</span> {wine.pairings}
+              )}
+              
+              {/* Only show White Wine section if we have white wines and not filtering to red only */}
+              {sortedWhiteVarietals.length > 0 && activeTab !== 'red' && (
+                <div>
+                  <h2 className="text-xl font-bold mb-4 bg-yellow-600 text-white p-2 rounded-md">White Wines</h2>
+                  
+                  <div className="space-y-4 pl-2">
+                    {sortedWhiteVarietals.map(varietal => (
+                      <div key={varietal} className="space-y-4">
+                        <div 
+                          className="sticky top-0 z-10 p-2 font-bold text-lg bg-yellow-100 rounded-md shadow-sm cursor-pointer flex justify-between items-center"
+                          onClick={() => setExpandedVarietals(prev => ({...prev, [varietal]: !prev[varietal]}))}
+                        >
+                          <span>{varietal} ({whiteWinesByVarietal[varietal].length})</span>
+                          <span className="text-gray-700">
+                            {expandedVarietals[varietal] ? '▼' : '▶'}
+                          </span>
+                        </div>
+                        
+                        {expandedVarietals[varietal] && whiteWinesByVarietal[varietal].map((wine, index) => (
+                          <div 
+                            key={index} 
+                            className="p-4 rounded-lg shadow-md bg-yellow-50"
+                          >
+                            <h2 className="text-lg font-bold">{wine.name}</h2>
+                            <div className="grid grid-cols-2 gap-2 mt-2 text-sm">
+                              <div>
+                                <span className="font-medium">Sweetness:</span> {wine.sweetness}
+                              </div>
+                              <div>
+                                <span className="font-medium">Alcohol:</span> {wine.alcohol}
+                              </div>
+                              <div>
+                                <span className="font-medium">Region:</span> {wine.region}
+                              </div>
+                              <div>
+                                <span className="font-medium">Style:</span> {wine.style}
+                              </div>
+                            </div>
+                            <div className="mt-2 text-sm">
+                              <span className="font-medium">Pairs with:</span> {wine.pairings}
+                            </div>
+                            <div className="mt-2 text-sm">
+                              <span className="font-medium">Description:</span> {wine.description}
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+                    ))}
+                  </div>
                 </div>
-                <div className="mt-2 text-sm">
-                  <span className="font-medium">Description:</span> {wine.description}
-                </div>
-              </div>
-            ))
+              )}
+            </>
           )}
         </div>
       </div>
