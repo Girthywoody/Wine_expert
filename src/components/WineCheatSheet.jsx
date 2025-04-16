@@ -10,6 +10,7 @@ const WineCheatSheet = () => {
   const [expandedVarietals, setExpandedVarietals] = useState({});
   const [selectedPairing, setSelectedPairing] = useState('');
   const [selectedStyles, setSelectedStyles] = useState([]);
+  const [isStyleDropdownOpen, setIsStyleDropdownOpen] = useState(false);
 
   
   // Common food pairings for the dropdown
@@ -32,7 +33,6 @@ const WineCheatSheet = () => {
     "Rich",
     "Full Bodied",
     "Dry-Medium Bodied",
-    "Full Bodied",
     "Light",
     "Medium Bodied",
     "Off-Dry",
@@ -269,27 +269,42 @@ const filteredWines = wines.filter(wine => {
           <label htmlFor="styleFilter" className="block text-sm font-medium text-gray-700 mb-1">
             Filter by Style
           </label>
-          <div className="space-y-2 max-h-40 overflow-y-auto border border-gray-300 rounded p-2 bg-white">
-            {commonStyles.map((style) => (
-              <div key={style} className="flex items-center">
-                <input
-                  type="checkbox"
-                  id={`style-${style}`}
-                  className="h-4 w-4 text-red-900 focus:ring-red-900 border-gray-300 rounded"
-                  checked={selectedStyles.includes(style)}
-                  onChange={(e) => {
-                    if (e.target.checked) {
-                      setSelectedStyles([...selectedStyles, style]);
-                    } else {
-                      setSelectedStyles(selectedStyles.filter(s => s !== style));
-                    }
-                  }}
-                />
-                <label htmlFor={`style-${style}`} className="ml-2 text-sm text-gray-700">
-                  {style}
-                </label>
+          <div className="relative">
+            <button
+              type="button"
+              className="w-full p-2 border border-gray-300 rounded shadow-sm bg-white text-left flex justify-between items-center"
+              onClick={() => setIsStyleDropdownOpen(!isStyleDropdownOpen)}
+            >
+              <span>{selectedStyles.length > 0 ? selectedStyles.join(', ') : 'All Styles'}</span>
+              <span className="text-gray-500">{isStyleDropdownOpen ? '▼' : '▶'}</span>
+            </button>
+            
+            {isStyleDropdownOpen && (
+              <div className="absolute z-10 w-full mt-1 bg-white border border-gray-300 rounded shadow-lg max-h-60 overflow-y-auto">
+                <div className="p-2 space-y-2">
+                  {commonStyles.map((style) => (
+                    <div key={style} className="flex items-center">
+                      <input
+                        type="checkbox"
+                        id={`style-${style}`}
+                        className="h-4 w-4 text-red-900 focus:ring-red-900 border-gray-300 rounded"
+                        checked={selectedStyles.includes(style)}
+                        onChange={(e) => {
+                          if (e.target.checked) {
+                            setSelectedStyles([...selectedStyles, style]);
+                          } else {
+                            setSelectedStyles(selectedStyles.filter(s => s !== style));
+                          }
+                        }}
+                      />
+                      <label htmlFor={`style-${style}`} className="ml-2 text-sm text-gray-700">
+                        {style}
+                      </label>
+                    </div>
+                  ))}
+                </div>
               </div>
-            ))}
+            )}
           </div>
         </div>
         
