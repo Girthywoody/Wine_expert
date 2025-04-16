@@ -12,7 +12,13 @@ const WineCheatSheet = () => {
     const fetchWineData = async () => {
       try {
         // Read the CSV file
-        const csvData = await window.fs.readFile('winelist.csv', { encoding: 'utf8' });
+        const csvData = await fetch('Untitled spreadsheet  Sheet3.csv')
+          .then(response => {
+            if (!response.ok) {
+              throw new Error('Failed to fetch CSV file');
+            }
+            return response.text();
+          });
         
         // Parse CSV to JSON
         Papa.parse(csvData, {
@@ -23,7 +29,7 @@ const WineCheatSheet = () => {
             // Transform the data structure to match our app needs
             const transformedWines = results.data.map(wine => ({
               name: wine['WINE NAME'] || '',
-              type: wine['WINE COLOR']?.toLowerCase() || '',
+              type: (wine['WINE COLOR'] || '').toLowerCase(),
               varietal: wine['VARIETAL'] || '',
               sweetness: wine['SWEETNESS'] || '',
               alcohol: wine['ALCOHOL'] || '',
