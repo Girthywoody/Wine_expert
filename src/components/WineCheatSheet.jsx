@@ -110,13 +110,8 @@ const WineCheatSheet = () => {
     // Create a new expanded state object
     let newExpandedState = {};
     
-    if (searchTerm.trim() === '') {
-      // If search is cleared, collapse all varietals
-      [...sortedRedVarietals, ...sortedWhiteVarietals].forEach(varietal => {
-        newExpandedState[varietal] = false;
-      });
-    } else {
-      // If there's a search term, expand varietals with matching wines
+    if (searchTerm.trim() !== '') {
+      // Only if there's a search term, expand varietals with matching wines
       sortedRedVarietals.forEach(varietal => {
         const hasMatchingWine = redWinesByVarietal[varietal].some(wine => 
           (wine.name?.toLowerCase() || '').includes(searchTerm.toLowerCase()) ||
@@ -124,7 +119,10 @@ const WineCheatSheet = () => {
           (wine.region?.toLowerCase() || '').includes(searchTerm.toLowerCase()) ||
           (wine.varietal?.toLowerCase() || '').includes(searchTerm.toLowerCase())
         );
-        newExpandedState[varietal] = hasMatchingWine;
+        
+        if (hasMatchingWine) {
+          newExpandedState[varietal] = true;
+        }
       });
       
       sortedWhiteVarietals.forEach(varietal => {
@@ -134,11 +132,17 @@ const WineCheatSheet = () => {
           (wine.region?.toLowerCase() || '').includes(searchTerm.toLowerCase()) ||
           (wine.varietal?.toLowerCase() || '').includes(searchTerm.toLowerCase())
         );
-        newExpandedState[varietal] = hasMatchingWine;
+        
+        if (hasMatchingWine) {
+          newExpandedState[varietal] = true;
+        }
       });
+      
+      // Only update the state if we have varietals to expand
+      if (Object.keys(newExpandedState).length > 0) {
+        setExpandedVarietals(prev => ({...prev, ...newExpandedState}));
+      }
     }
-    
-    setExpandedVarietals(prev => ({...prev, ...newExpandedState}));
   }, [searchTerm, sortedRedVarietals, sortedWhiteVarietals]);
 
   // Handle search term changes
