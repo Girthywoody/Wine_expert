@@ -44,7 +44,7 @@ const WineCheatSheet = () => {
       try {
         // Read the CSV file
         const csvData = await fetch('winelist.csv')
-          .then(response => {fu
+          .then(response => {
             if (!response.ok) {
               throw new Error('Failed to fetch CSV file');
             }
