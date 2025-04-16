@@ -1,24 +1,31 @@
-VARIETAL,WINE COLOR,WINE NAME,IMAGE,MADE IN,SYTLE,DESCRIPTION,SWEETNESS,ALCOHOL,FOOD PAIRING,WINE ID
-MERLOT,RED,WAYNE GRETZKY NO.99 VQA,https://aem.lcbo.com/content/dam/lcbo/products/0/6/3/9/063966.jpg.thumb.2048.2048.jpg,ONTARIO,MEDIUM-BODIED FRUITY,"Medium ruby in color; aromas and flavours of red cherry with hints of vanilla; dry,
-medium-bodied, well structured.",2 out of 5  6g/L,12.80%,"STUFFED MUSHROOMS, GARLIC BREAD, FILET",1
-MERLOT,RED,CK MONDAVI,https://www.vivino.com/CA/en/ck-mondavi-merlot/w/1440031?srsltid=AfmBOoquvclR58W-1-g0bXRk6UKhKpcynuPxGnzz0azw8E_XFDzwwXfL,"CALIFORNIA, USA",MEDIUM-BODIED FRUITY,"DARK FLAVOURS OF CLOVE, TEA AND CHERRY",2 out of 5 6g/L,12.80%,"BEEF, CHEDDAR CHEESES AND CHICKEN",2
-MERLOT,RED,CHATEAU GUILHEM,,FRANCE,LIGHT & FRUITY,"Light fruity flavors of red berries, with hints of liquorice.",1 OUT OF 5 2g/L,14.50%,"BAKED BRIE, HAMBURGERS",3
-PINOT NOIR,RED,ROBERT MONDAVI,https://www.saq.com/en/465435?srsltid=AfmBOorc75yGqlypMtPKKi1P7kNqACPrJzFMFTRTqhejTxSAMSORxrzo,"CALIFORNIA, USA",MEDIUM-BODIED FRUITY,"refreshing, cool-climate Pinot Noir from New Zealand offers classic flavours of
-black cherry and raspberry with earthy notes.",2 out of 5 6g/L,12.50%,"PARMESAN CHICKEN, SALMON",4
-PINOT NOIR,RED,KIM CRAWFORD,https://www.google.com/imgres?q=kim%20crawford%20pinot%20noir&imgurl=https%3A%2F%2Fimages.vivino.com%2Fthumbs%2FnD-E4sGrR8KRHzyPxo-l7Q_pl_480x640.png&imgrefurl=https%3A%2F%2Fwww.vivino.com%2FCA%2Fen%2Fkim-crawford-pinot-noir%2Fw%2F1704527&docid=6RDssyRJDxcv_M&tbnid=8IJwi3qUgex6cM&vet=12ahUKEwjduuuMndyMAxW7hIkEHaD8K7wQM3oECB0QAA..i&w=480&h=640&hcb=2&ved=2ahUKEwjduuuMndyMAxW7hIkEHaD8K7wQM3oECB0QAA,NEW ZEALAND,MEDIUM-BODIED FRUITY,"Dark red in the glass. Lifted red berry fruit aromas with dark cherry notes,
+VARIETAL,WINE COLOR,WINE NAME,MADE IN,SYTLE,DESCRIPTION,SWEETNESS,ALCOHOL,FOOD PAIRING
+MERLOT,RED,WAYNE GRETZKY NO.99 VQA,ONTARIO,MEDIUM-BODIED FRUITY,"Medium ruby in color; aromas and flavours of red cherry with hints of vanilla; dry,
+medium-bodied, well structured.",2 out of 5  6g/L,12.80%,"STUFFED MUSHROOMS, GARLIC BREAD, FILET"
+MERLOT,RED,CK MONDAVI,"CALIFORNIA, USA",MEDIUM-BODIED FRUITY,"DARK FLAVOURS OF CLOVE, TEA AND CHERRY",2 out of 5 6g/L,12.80%,"BEEF, CHEDDAR CHEESES AND CHICKEN"
+MERLOT,RED,CHATEAU GUILHEM,FRANCE,LIGHT & FRUITY,"Light fruity flavors of red berries, with hints of liquorice.",1 OUT OF 5 2g/L,14.50%,"BAKED BRIE, HAMBURGERS"
+PINOT NOIR,RED,ROBERT MONDAVI,"CALIFORNIA, USA",MEDIUM-BODIED FRUITY,"refreshing, cool-climate Pinot Noir from New Zealand offers classic flavours of
+black cherry and raspberry with earthy notes.",2 out of 5 6g/L,12.50%,"PARMESAN CHICKEN, SALMON"
+PINOT NOIR,RED,KIM CRAWFORD,NEW ZEALAND,MEDIUM-BODIED FRUITY,"Dark red in the glass. Lifted red berry fruit aromas with dark cherry notes,
 complemented by savoury undertones and spicy oak. Ripe, dark berry flavours of blackberry
-and black currant. Subtle hints of oak help fill out the palate.",1 out of 5 3g/L,12.50%,"PARMESAN CHICKEN, SALMON",5
-PINOT NOIR,RED,"LA CREMA, SONOMA COAST",https://www.google.com/imgres?q=la%20crema%20pinot%20noir%20SONOMA%20COAST&imgurl=https%3A%2F%2Fimages.vivino.com%2Fthumbs%2FiQqGFD-qRm2FZzKDpnSx9w_pl_480x640.png&imgrefurl=https%3A%2F%2Fwww.vivino.com%2FCA%2Fen%2Fla-crema-sonoma-coast-pinot-noir%2Fw%2F9108&docid=yekn5nNd7rNy4M&tbnid=sW4hu-QUaokfSM&vet=12ahUKEwiSnLiEndyMAxVWlYkEHbBBOpsQM3oECBgQAA..i&w=480&h=640&hcb=2&ved=2ahUKEwiSnLiEndyMAxVWlYkEHbBBOpsQM3oECBgQAA,"CALIFORNIA, USA",MEDIUM-BODIED ,"Aromas of raspberry, cranberry, black licorice, and exotic tea notes.  Flavors of red
+and black currant. Subtle hints of oak help fill out the palate.",1 out of 5 3g/L,12.50%,"PARMESAN CHICKEN, SALMON"
+PINOT NOIR,RED,"LA CREMA, SONOMA COAST","CALIFORNIA, USA",MEDIUM-BODIED ,"Aromas of raspberry, cranberry, black licorice, and exotic tea notes.  Flavors of red
 cherry, plum, and boysenberry, subtle hints of espresso and cocoa nib underpin notes of spice
-and toast. Firm yet integrated tannins and bright acidity drives a long finish.",2 out of 5 3g/L,13.50%,"RIBS, SALMON, RIBEYE STEAK",6
-SHIRAZ & SYRAH,RED,SEASONS SHRIAZ,,ONTARIO,FULL BODIED & FRUITY,"Deep ruby in colour, this Shiraz displays a rich bouquet of chocolate, cedar and
+and toast. Firm yet integrated tannins and bright acidity drives a long finish.",2 out of 5 3g/L,13.50%,"RIBS, SALMON, RIBEYE STEAK"
+SHIRAZ & SYRAH,RED,SEASONS SHRIAZ,ONTARIO,FULL BODIED & FRUITY,"Deep ruby in colour, this Shiraz displays a rich bouquet of chocolate, cedar and
 black pepper combined with dark berry fruits. The palate is well structured with spice,
-chocolate, tart blackberry and a round mouth feel.",2 out of 5 3g/L,12.50%,PEPPERCORN STEAK,7
-SHIRAZ & SYRAH,RED,TALL POPPY,,AUSTRILIA,MEDIUM BODIED & FRUITY,"Tall Poppy is a deep ruby/garnet in colour; blackberries and plums. Oak aromas,
+chocolate, tart blackberry and a round mouth feel.",2 out of 5 3g/L,12.50%,PEPPERCORN STEAK
+SHIRAZ & SYRAH,RED,TALL POPPY,AUSTRILIA,MEDIUM BODIED & FRUITY,"Tall Poppy is a deep ruby/garnet in colour; blackberries and plums. Oak aromas,
 berry and spice flavours and balanced acidity with soft lingering tannins in medium length
-finish.",3 out of 5,14%,NY CALI STEAK,8
-SHIRAZ & SYRAH,RED,CHATEAU ROQUEGRAVE,,"VALEYRAC, FRANCE",MEDIUM BODIED & SMOOTH,"Chateau Roquegrave is deep ruby/garnet in colour; red fruit, oak and vanilla. Oak
-aromas, berry and spice flavours and long acidity finish.",1 out of 5 2g/L,14%,CALI PEPPERCORN STEAK,9
-MELBEC,RED,JEAN BOUSQUET,,"MENDOZA, ARGENTINA",FULL BODIED & SMOOTH,"Deep ruby purple; blackberry and plum aromas with a touch of spice; medium to
-full body with rich fruit flavour with good length; medium tannins.",1 out of 5 2g/L,14%,"BEEF, LAMB, CHICKEN",10
-MELBEC,RED,TEIA,,"MENDOZA, ARGENTINA",MEDIUM BODIED & FRUITY,,1 out of 5 2g/L,13.50%,"BURGERS, BUTTERNUT SQUASH RAVIOLI",11
+finish.",3 out of 5,14%,NY CALI STEAK
+SHIRAZ & SYRAH,RED,CHATEAU ROQUEGRAVE,"VALEYRAC, FRANCE",MEDIUM BODIED & SMOOTH,"Chateau Roquegrave is deep ruby/garnet in colour; red fruit, oak and vanilla. Oak
+aromas, berry and spice flavours and long acidity finish.",1 out of 5 2g/L,14%,CALI PEPPERCORN STEAK
+MELBEC,RED,JEAN BOUSQUET,"MENDOZA, ARGENTINA",FULL BODIED & SMOOTH,"Deep ruby purple; blackberry and plum aromas with a touch of spice; medium to
+full body with rich fruit flavour with good length; medium tannins.",1 out of 5 2g/L,14%,"BEEF, LAMB, CHICKEN"
+MELBEC,RED,TEIA,"MENDOZA, ARGENTINA",MEDIUM BODIED & FRUITY,,1 out of 5 2g/L,13.50%,"BURGERS, BUTTERNUT SQUASH RAVIOLI"
+ALTERNATIVE WINE,RED,RUFFINO CHIANTI,ITALY,FULL BODIED & SMOOTH,"The wine is dry, medium-bodied and well-structured. Enjoy aromas and flavours of red berry and cherry fruit, with spicy notes and a touch of pepper.
+
+",2 out of 5 3g/L,12.50%,"Ribs, Rack of Lamb, Steak"
+ALTERNATIVE WINE,RED,IL LUPO SANGIOVESE,ITALY,MEDIUM BODIED & WELL STRUCTURED ,Il Lupo is dry and fresh. Enjoy aromas and flavours of ripe red fruit and oak spices,3 out of 5  7g/L,14.00%,"Red meat, Loaded Cheese Bread, Game Meat."
+ALTERNATIVE WINE,RED,Zenato Valpolicella,"VENETO, ITALY",FULL BODIED & SMOOTH,"Valpolicella A lively, youthful ruby wine with fresh cherry aromas that develop into a rich cherry pie character in the mouth.",3 out of 5 7g/L,14.00%,"Bison, Pasta or Filet"
+ALTERNATIVE WINE,RED,Montagne-St Emilion Bordeaux,"BRODEAUX, FRANCE",FULL BODIED & SMOOTH,Montagne-St Emilion Bordeaux has an intense red berry aroma with undergrowth as well as blackberry and licorice.,1 out of 5 3g/L,14.00%,"Bison, Burgers or Sirloins"
+ALTERNATIVE WINE,RED,CastelGiocondo Burnello,"TUSCANY, ITALY",MEDIUM BODIED & SMOOTH,"CastelGiocondo has ruby red colors with aromas of cedar, red fruit and leather.",1 out of 5 3g/L,14.50%,"Ribs, Striploin, Lamb"
