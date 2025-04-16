@@ -8,8 +8,10 @@ const WineCheatSheet = () => {
   const [searchTerm, setSearchTerm] = useState('');
   const [activeTab, setActiveTab] = useState('all');
   const [expandedVarietals, setExpandedVarietals] = useState({});
-  const [selectedPairing, setSelectedPairing] = useState('');
-  const [selectedStyle, setSelectedStyle] = useState('');
+  const [selectedPairings, setSelectedPairings] = useState([]);
+  const [selectedStyles, setSelectedStyles] = useState([]);
+  const [showPairingDropdown, setShowPairingDropdown] = useState(false);
+  const [showStyleDropdown, setShowStyleDropdown] = useState(false);
 
   
   // Common food pairings for the dropdown
@@ -24,22 +26,18 @@ const WineCheatSheet = () => {
 
   // Common wine styles for the dropdown
   const commonStyles = [
-    "Crisp & Dry",
+    "Crisp",
     "Dry",
-    "Dry-Medium Bodied", 
-    "Fruity & Sweet",
-    "Full Bodied & Fruity",
-    "Full Bodied & Smooth",
-    "Full-Bodied & Rich",
-    "Full-Bodied & Smooth",
-    "Light & Crisp",
-    "Light & Fruity",
+    "Fruity",
+    "Sweet",
+    "Smooth",
+    "Rich",
+    "Full Bodied",
+    "Dry-Medium Bodied",
+    "Full Bodied",
+    "Light",
     "Medium Bodied",
-    "Medium Bodied & Fruity",
-    "Medium Bodied & Smooth",
-    "Medium Bodied & Well Structured",
-    "Medium-Bodied Fruity",
-    "Off-Dry & Fruity",
+    "Off-Dry",
     "Soft"
   ];
 
@@ -91,7 +89,7 @@ const WineCheatSheet = () => {
     fetchWineData();
   }, []);
 
-// Filter wines based on search term, active tab, selected pairing and style
+// Filter wines based on search term, active tab, selected pairings and styles
 const filteredWines = wines.filter(wine => {
   const matchesSearch = 
     (wine.name?.toLowerCase() || '').includes(searchTerm.toLowerCase()) ||
@@ -99,14 +97,18 @@ const filteredWines = wines.filter(wine => {
     (wine.region?.toLowerCase() || '').includes(searchTerm.toLowerCase()) ||
     (wine.varietal?.toLowerCase() || '').includes(searchTerm.toLowerCase());
   
-  const matchesPairing = !selectedPairing || 
-    (wine.pairings?.toLowerCase() || '').includes(selectedPairing.toLowerCase());
+  const matchesPairings = selectedPairings.length === 0 || 
+    selectedPairings.some(pairing => 
+      (wine.pairings?.toLowerCase() || '').includes(pairing.toLowerCase())
+    );
 
-  const matchesStyle = !selectedStyle || 
-    (wine.style?.toLowerCase() || '').includes(selectedStyle.toLowerCase());
+  const matchesStyles = selectedStyles.length === 0 || 
+    selectedStyles.some(style => 
+      (wine.style?.toLowerCase() || '').includes(style.toLowerCase())
+    );
   
-  if (activeTab === 'all') return matchesSearch && matchesPairing && matchesStyle;
-  return matchesSearch && matchesPairing && matchesStyle && wine.type === activeTab;
+  if (activeTab === 'all') return matchesSearch && matchesPairings && matchesStyles;
+  return matchesSearch && matchesPairings && matchesStyles && wine.type === activeTab;
 });
   
   // First separate by type, then group by varietal
@@ -150,7 +152,7 @@ const filteredWines = wines.filter(wine => {
     // Create a new expanded state object
     let newExpandedState = {};
     
-    if (searchTerm.trim() !== '' || selectedPairing !== '' || selectedStyle !== '') {
+    if (searchTerm.trim() !== '' || selectedPairings.length > 0 || selectedStyles.length > 0) {
       // Expand varietals with matching wines (either by search, pairing, or style)
       sortedRedVarietals.forEach(varietal => {
         const hasMatchingWine = redWinesByVarietal[varietal].some(wine => {
@@ -160,13 +162,17 @@ const filteredWines = wines.filter(wine => {
             (wine.region?.toLowerCase() || '').includes(searchTerm.toLowerCase()) ||
             (wine.varietal?.toLowerCase() || '').includes(searchTerm.toLowerCase());
           
-          const matchesPairing = selectedPairing === '' || 
-            (wine.pairings?.toLowerCase() || '').includes(selectedPairing.toLowerCase());
+          const matchesPairings = selectedPairings.length === 0 || 
+            selectedPairings.some(pairing => 
+              (wine.pairings?.toLowerCase() || '').includes(pairing.toLowerCase())
+            );
           
-          const matchesStyle = selectedStyle === '' || 
-            (wine.style?.toLowerCase() || '').includes(selectedStyle.toLowerCase());
+          const matchesStyles = selectedStyles.length === 0 || 
+            selectedStyles.some(style => 
+              (wine.style?.toLowerCase() || '').includes(style.toLowerCase())
+            );
           
-          return matchesSearch && matchesPairing && matchesStyle;
+          return matchesSearch && matchesPairings && matchesStyles;
         });
         
         if (hasMatchingWine) {
@@ -182,13 +188,17 @@ const filteredWines = wines.filter(wine => {
             (wine.region?.toLowerCase() || '').includes(searchTerm.toLowerCase()) ||
             (wine.varietal?.toLowerCase() || '').includes(searchTerm.toLowerCase());
           
-          const matchesPairing = selectedPairing === '' || 
-            (wine.pairings?.toLowerCase() || '').includes(selectedPairing.toLowerCase());
+          const matchesPairings = selectedPairings.length === 0 || 
+            selectedPairings.some(pairing => 
+              (wine.pairings?.toLowerCase() || '').includes(pairing.toLowerCase())
+            );
           
-          const matchesStyle = selectedStyle === '' || 
-            (wine.style?.toLowerCase() || '').includes(selectedStyle.toLowerCase());
+          const matchesStyles = selectedStyles.length === 0 || 
+            selectedStyles.some(style => 
+              (wine.style?.toLowerCase() || '').includes(style.toLowerCase())
+            );
           
-          return matchesSearch && matchesPairing && matchesStyle;
+          return matchesSearch && matchesPairings && matchesStyles;
         });
         
         if (hasMatchingWine) {
@@ -201,11 +211,27 @@ const filteredWines = wines.filter(wine => {
         setExpandedVarietals(prev => ({...prev, ...newExpandedState}));
       }
     }
-  }, [searchTerm, selectedPairing, selectedStyle, sortedRedVarietals, sortedWhiteVarietals]);
+  }, [searchTerm, selectedPairings, selectedStyles, sortedRedVarietals, sortedWhiteVarietals]);
   
   // Handle search term changes
   const handleSearchChange = (e) => {
     setSearchTerm(e.target.value);
+  };
+
+  const handlePairingSelect = (pairing) => {
+    setSelectedPairings(prev => 
+      prev.includes(pairing) 
+        ? prev.filter(p => p !== pairing)
+        : [...prev, pairing]
+    );
+  };
+
+  const handleStyleSelect = (style) => {
+    setSelectedStyles(prev => 
+      prev.includes(style) 
+        ? prev.filter(s => s !== style)
+        : [...prev, style]
+    );
   };
 
   if (loading) {
@@ -245,41 +271,71 @@ const filteredWines = wines.filter(wine => {
         </div>
         
         <div className="mb-4">
-          <label htmlFor="pairingFilter" className="block text-sm font-medium text-gray-700 mb-1">
-            Filter by Food Pairing
-          </label>
-          <select
-            id="pairingFilter"
-            className="w-full p-2 border border-gray-300 rounded shadow-sm bg-white"
-            value={selectedPairing}
-            onChange={(e) => setSelectedPairing(e.target.value)}
-          >
-            <option value="">All Pairings</option>
-            {commonPairings.map((pairing) => (
-              <option key={pairing} value={pairing}>
-                {pairing.charAt(0).toUpperCase() + pairing.slice(1)}
-              </option>
-            ))}
-          </select>
+          <div className="relative">
+            <button
+              onClick={() => setShowPairingDropdown(!showPairingDropdown)}
+              className="w-full p-2 border border-gray-300 rounded shadow-sm bg-white text-left flex justify-between items-center"
+            >
+              <span>
+                {selectedPairings.length > 0 
+                  ? `${selectedPairings.length} Pairings Selected`
+                  : "Select Food Pairings"}
+              </span>
+              <span className="text-gray-500">▼</span>
+            </button>
+            {showPairingDropdown && (
+              <div className="absolute z-10 w-full mt-1 bg-white border border-gray-300 rounded shadow-lg max-h-60 overflow-y-auto">
+                {commonPairings.map((pairing) => (
+                  <label
+                    key={pairing}
+                    className="flex items-center p-2 hover:bg-gray-100 cursor-pointer"
+                  >
+                    <input
+                      type="checkbox"
+                      checked={selectedPairings.includes(pairing)}
+                      onChange={() => handlePairingSelect(pairing)}
+                      className="mr-2"
+                    />
+                    <span>{pairing.charAt(0).toUpperCase() + pairing.slice(1)}</span>
+                  </label>
+                ))}
+              </div>
+            )}
+          </div>
         </div>
 
         <div className="mb-4">
-          <label htmlFor="styleFilter" className="block text-sm font-medium text-gray-700 mb-1">
-            Filter by Style
-          </label>
-          <select
-            id="styleFilter"
-            className="w-full p-2 border border-gray-300 rounded shadow-sm bg-white"
-            value={selectedStyle}
-            onChange={(e) => setSelectedStyle(e.target.value)}
-          >
-            <option value="">All Styles</option>
-            {commonStyles.map((style) => (
-              <option key={style} value={style}>
-                {style}
-              </option>
-            ))}
-          </select>
+          <div className="relative">
+            <button
+              onClick={() => setShowStyleDropdown(!showStyleDropdown)}
+              className="w-full p-2 border border-gray-300 rounded shadow-sm bg-white text-left flex justify-between items-center"
+            >
+              <span>
+                {selectedStyles.length > 0 
+                  ? `${selectedStyles.length} Styles Selected`
+                  : "Select Wine Styles"}
+              </span>
+              <span className="text-gray-500">▼</span>
+            </button>
+            {showStyleDropdown && (
+              <div className="absolute z-10 w-full mt-1 bg-white border border-gray-300 rounded shadow-lg max-h-60 overflow-y-auto">
+                {commonStyles.map((style) => (
+                  <label
+                    key={style}
+                    className="flex items-center p-2 hover:bg-gray-100 cursor-pointer"
+                  >
+                    <input
+                      type="checkbox"
+                      checked={selectedStyles.includes(style)}
+                      onChange={() => handleStyleSelect(style)}
+                      className="mr-2"
+                    />
+                    <span>{style}</span>
+                  </label>
+                ))}
+              </div>
+            )}
+          </div>
         </div>
         
         <div className="flex mb-4 border-b">
