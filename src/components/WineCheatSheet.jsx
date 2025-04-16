@@ -105,28 +105,46 @@ const WineCheatSheet = () => {
   const sortedRedVarietals = Object.keys(redWinesByVarietal).sort();
   const sortedWhiteVarietals = Object.keys(whiteWinesByVarietal).sort();
   
-  // Initialize expanded state for new varietals
+  // Effect to handle auto-expansion of varietals based on search term
   useEffect(() => {
-    const newExpandedState = {};
+    // Create a new expanded state object
+    let newExpandedState = {};
     
-    // Add red varietals
-    sortedRedVarietals.forEach(varietal => {
-      if (expandedVarietals[varietal] === undefined) {
-        newExpandedState[varietal] = false; // Start collapsed by default
-      }
-    });
-    
-    // Add white varietals
-    sortedWhiteVarietals.forEach(varietal => {
-      if (expandedVarietals[varietal] === undefined) {
-        newExpandedState[varietal] = false; // Start collapsed by default
-      }
-    });
-    
-    if (Object.keys(newExpandedState).length > 0) {
-      setExpandedVarietals(prev => ({...prev, ...newExpandedState}));
+    if (searchTerm.trim() === '') {
+      // If search is cleared, collapse all varietals
+      [...sortedRedVarietals, ...sortedWhiteVarietals].forEach(varietal => {
+        newExpandedState[varietal] = false;
+      });
+    } else {
+      // If there's a search term, expand varietals with matching wines
+      sortedRedVarietals.forEach(varietal => {
+        const hasMatchingWine = redWinesByVarietal[varietal].some(wine => 
+          (wine.name?.toLowerCase() || '').includes(searchTerm.toLowerCase()) ||
+          (wine.description?.toLowerCase() || '').includes(searchTerm.toLowerCase()) ||
+          (wine.region?.toLowerCase() || '').includes(searchTerm.toLowerCase()) ||
+          (wine.varietal?.toLowerCase() || '').includes(searchTerm.toLowerCase())
+        );
+        newExpandedState[varietal] = hasMatchingWine;
+      });
+      
+      sortedWhiteVarietals.forEach(varietal => {
+        const hasMatchingWine = whiteWinesByVarietal[varietal].some(wine => 
+          (wine.name?.toLowerCase() || '').includes(searchTerm.toLowerCase()) ||
+          (wine.description?.toLowerCase() || '').includes(searchTerm.toLowerCase()) ||
+          (wine.region?.toLowerCase() || '').includes(searchTerm.toLowerCase()) ||
+          (wine.varietal?.toLowerCase() || '').includes(searchTerm.toLowerCase())
+        );
+        newExpandedState[varietal] = hasMatchingWine;
+      });
     }
-  }, [sortedRedVarietals, sortedWhiteVarietals]);
+    
+    setExpandedVarietals(prev => ({...prev, ...newExpandedState}));
+  }, [searchTerm, sortedRedVarietals, sortedWhiteVarietals]);
+
+  // Handle search term changes
+  const handleSearchChange = (e) => {
+    setSearchTerm(e.target.value);
+  };
 
   if (loading) {
     return (
@@ -160,7 +178,7 @@ const WineCheatSheet = () => {
             placeholder="Search wines..."
             className="w-full p-2 border border-gray-300 rounded shadow-sm"
             value={searchTerm}
-            onChange={(e) => setSearchTerm(e.target.value)}
+            onChange={handleSearchChange}
           />
         </div>
         
